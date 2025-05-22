@@ -1,14 +1,21 @@
-const express = require('express')
-const app = express()
-const port = 3000
+const express = require('express');
+const app = express();
+const path = require('path');
 
-// app.get('/', (req, res) => {
-//   res.send('ねむてぇ!')
-// })
+const loggerMiddleware = function(req, res, next) {
+  console.log(`[${new Date()}] ${req.method} ${req.url}`);
+  next();
+};
 
-// app.get('/users/:id', function (req, res) {
-//   res.send('User ID: ' + req.params.id)
-// })
+app.use(loggerMiddleware);
+
+// 静的ファイルの提供とキャッシュの有効化
+app.use(express.static('public', { maxAge: 86400000 }));
+
+// test-imageリクエスト
+app.get('/test-image', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/images/logo.jpg'));
+});
 
 // GETリクエスト
 app.get('/', (req, res) => {
@@ -40,6 +47,6 @@ app.delete('/:id', (req, res) => {
   });
 });
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+app.listen(3000, () => {
+  console.log('Server started on port 3000');
+});
